@@ -21,7 +21,7 @@ class LogViewer implements LogViewerContract
     /**
      * LogViewer Version
      */
-    const VERSION = '4.7.1';
+    const VERSION = '4.5.0';
 
     /* -----------------------------------------------------------------
      |  Properties
@@ -206,9 +206,9 @@ class LogViewer implements LogViewerContract
      */
     public function download($date, $filename = null, $headers = [])
     {
-        if (is_null($filename)) {
+        /*if (is_null($filename)) {
             $filename = "laravel-{$date}.log";
-        }
+        }*/
 
         $path = $this->filesystem->path($date);
 
@@ -247,16 +247,6 @@ class LogViewer implements LogViewerContract
     public function delete($date)
     {
         return $this->filesystem->delete($date);
-    }
-
-    /**
-     * Clear the log files.
-     *
-     * @return bool
-     */
-    public function clear()
-    {
-        return $this->filesystem->clear();
     }
 
     /**
