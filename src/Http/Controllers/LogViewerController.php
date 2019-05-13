@@ -85,48 +85,44 @@ class LogViewerController extends Controller
         $headers = $stats->header();
         $rows    = $this->paginate($stats->rows(), $request);
 
-        return $this->view('logs', compact('headers', 'rows'));
+        return $this->view('logs', compact('headers', 'rows', 'footer'));
     }
 
     /**
      * Show the log.
      *
-     * @param  string                    $date
-     * @param  \Illuminate\Http\Request  $request
+     * @param  string  $date
      *
      * @return \Illuminate\View\View
      */
-    public function show($date, Request $request)
+    public function show($date)
     {
-        $level   = 'all';
         $log     = $this->getLogOrFail($date);
-        $query   = $request->get('query');
         $levels  = $this->logViewer->levelsNames();
-        $entries = $log->entries($level)->paginate($this->perPage);
+        $entries = $log->entries($level = 'all')->paginate($this->perPage);
 
-        return $this->view('show', compact('level', 'log', 'query', 'levels', 'entries'));
+        return $this->view('show', compact('log', 'levels', 'level', 'search', 'entries'));
     }
 
     /**
      * Filter the log entries by level.
      *
-     * @param  string                    $date
-     * @param  string                    $level
-     * @param  \Illuminate\Http\Request  $request
+     * @param  string  $date
+     * @param  string  $level
      *
      * @return \Illuminate\View\View|\Illuminate\Http\RedirectResponse
      */
-    public function showByLevel($date, $level, Request $request)
+    public function showByLevel($date, $level)
     {
+        $log = $this->getLogOrFail($date);
+
         if ($level === 'all')
             return redirect()->route($this->showRoute, [$date]);
 
-        $log     = $this->getLogOrFail($date);
-        $query   = $request->get('query');
         $levels  = $this->logViewer->levelsNames();
         $entries = $this->logViewer->entries($date, $level)->paginate($this->perPage);
 
-        return $this->view('show', compact('level', 'log', 'query', 'levels', 'entries'));
+        return $this->view('show', compact('log', 'levels', 'level', 'search', 'entries'));
     }
 
     /**
@@ -138,20 +134,18 @@ class LogViewerController extends Controller
      *
      * @return \Illuminate\View\View|\Illuminate\Http\RedirectResponse
      */
-    public function search($date, $level = 'all', Request $request)
-    {
-        $query   = $request->get('query');
+    public function search($date, $level = 'all', Request $request) {
+        $log = $this->getLogOrFail($date);
 
-        if (is_null($query))
-            return redirect()->route($this->showRoute, [$date]);
+        if (is_null($query = $request->get('query')))
+            return redirect()->route('log-viewer::logs.show', [$date]);
 
-        $log     = $this->getLogOrFail($date);
         $levels  = $this->logViewer->levelsNames();
         $entries = $log->entries($level)->filter(function (LogEntry $value) use ($query) {
             return Str::contains($value->header, $query);
         })->paginate($this->perPage);
 
-        return $this->view('show', compact('level', 'log', 'query', 'levels', 'entries'));
+        return $this->view('show', compact('log', 'levels', 'level', 'query', 'entries'));
     }
 
     /**
@@ -163,7 +157,8 @@ class LogViewerController extends Controller
      */
     public function download($date)
     {
-        return $this->logViewer->download($date);
+	    $path = config('log-viewer.storage-path') . DIRECTORY_SEPARATOR;
+        return $this->logViewer->download($path.$date);
     }
 
     /**
@@ -179,9 +174,9 @@ class LogViewerController extends Controller
             abort(405, 'Method Not Allowed');
 
         $date = $request->get('date');
-
+	    $path = config('log-viewer.storage-path') . DIRECTORY_SEPARATOR;
         return response()->json([
-            'result' => $this->logViewer->delete($date) ? 'success' : 'error'
+	        'result' => $this->logViewer->delete($path. $date) ? 'success' : 'error'
         ]);
     }
 
