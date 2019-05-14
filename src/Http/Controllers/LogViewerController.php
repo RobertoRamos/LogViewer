@@ -88,21 +88,21 @@ class LogViewerController extends Controller
         return $this->view('logs', compact('headers', 'rows', 'footer'));
     }
 
-    /**
-     * Show the log.
-     *
-     * @param  string  $date
-     *
-     * @return \Illuminate\View\View
-     */
-    public function show($date)
-    {
-        $log     = $this->getLogOrFail($date);
-        $levels  = $this->logViewer->levelsNames();
-        $entries = $log->entries($level = 'all')->paginate($this->perPage);
+	/**
+	 * Show the log.
 
-        return $this->view('show', compact('log', 'levels', 'level', 'search', 'entries'));
-    }
+	 * @param $date
+	 * @param \Illuminate\Http\Request $request
+	 * @return \Illuminate\View\View
+	 */
+	public function show($date, Request $request)
+	{
+		$log     = $this->getLogOrFail($date);
+		$levels  = $this->logViewer->levelsNames();
+		$entries = $log->entries($level = 'all')->paginate($this->perPage);
+		$query   = $request->get('query');
+		return $this->view('show', compact('log', 'levels','query', 'level', 'search', 'entries'));
+	}
 
     /**
      * Filter the log entries by level.
