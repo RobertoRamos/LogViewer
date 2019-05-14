@@ -1,8 +1,8 @@
 {
-    "name":        "arcanedev/log-viewer",
+    "name":        "robertoramos/log-viewer",
     "description": "Provides a Log Viewer for Laravel 5",
     "keywords":    ["arcanedev", "arcanesoft", "laravel", "log", "log viewer", "log-viewer", "logviewer"],
-    "homepage":    "https://github.com/ARCANEDEV/LogViewer",
+    "homepage":    "https://github.com/robertoramos/LogViewer",
     "authors": [
         {
             "name":     "ARCANEDEV",
@@ -16,13 +16,12 @@
     "require": {
         "php":               ">=7.1.3",
         "psr/log":           "~1.0",
-        "arcanedev/support": "~4.5.0"
+        "arcanedev/support": "~4.3.0"
     },
     "require-dev": {
-        "orchestra/testbench": "~3.8.0",
-        "mockery/mockery":     "~1.0",
-        "phpunit/phpcov":      "~5.0|~6.0",
-        "phpunit/phpunit":     "~7.0|~8.0"
+        "orchestra/testbench": "~3.6.0",
+        "phpunit/phpunit":     "~7.0",
+        "phpunit/phpcov":      "~5.0"
     },
     "autoload": {
         "psr-4": {
